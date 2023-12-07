@@ -9,7 +9,8 @@ public class AppRunner {
 
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
-    private final CoinAcceptor coinAcceptor;
+    private Acceptor coinAcceptor;
+    private Acceptor cardAcceptor;
 
     private static boolean isExit = false;
 
@@ -22,7 +23,8 @@ public class AppRunner {
                 new Mars(ActionLetter.F, 80),
                 new Pistachios(ActionLetter.G, 130)
         });
-        coinAcceptor = new CoinAcceptor(100);
+        coinAcceptor = new Acceptor(100);
+        cardAcceptor = new Acceptor(100);
     }
 
     public static void run() {
@@ -35,9 +37,7 @@ public class AppRunner {
     private void startSimulation() {
         print("В автомате доступны:");
         showProducts(products);
-
         print("Монет на сумму: " + coinAcceptor.getAmount());
-
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
