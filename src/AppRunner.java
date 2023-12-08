@@ -122,13 +122,6 @@ public class AppRunner {
     }
 
     private void chooseAction(UniversalArray<Product> products) {
-<<<<<<< HEAD
-        print(" a - Пополнить баланс");
-        showActions(products);
-        print(" h - Выйти");
-        String action = fromConsole().substring(0, 1);
-        if ("a".equalsIgnoreCase(action)) {
-=======
         if(m.equals("x")){
             print(" a - Пополнить баланс");
         }
@@ -136,7 +129,6 @@ public class AppRunner {
         print(" h - Выйти");
         String action = fromConsole().substring(0, 1);
         if ("a".equalsIgnoreCase(action) && m.equals("x")) {
->>>>>>> home_work_25
             coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
             print("Вы пополнили баланс на 10");
             return;
@@ -147,8 +139,6 @@ public class AppRunner {
                     coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
                     break;
-<<<<<<< HEAD
-=======
                 } else if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase())) && m.equals("y")) {
                     cardAcceptor.setAmount(cardAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
@@ -156,16 +146,11 @@ public class AppRunner {
                 } else if ("h".equalsIgnoreCase(action)) {
                     isExit = true;
                     break;
->>>>>>> home_work_25
                 }
             }
         } catch (IllegalArgumentException e) {
-            if ("h".equalsIgnoreCase(action)) {
-                isExit = true;
-            } else {
-                print("Недопустимая буква. Попрбуйте еще раз.");
-                chooseAction(products);
-            }
+            print("Недопустимая буква. Попрбуйте еще раз.");
+            chooseAction(products);
         }
     }
 
