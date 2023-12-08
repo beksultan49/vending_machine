@@ -36,7 +36,6 @@ public class AppRunner {
                 print("Монет на сумму: " + coinAcceptor.getAmount());
                 if (coinAcceptor.getAmount() <= 0) {
                     System.out.println("У вас закончились монеты!");
-                    System.exit(0);
                 }
             }
         };
