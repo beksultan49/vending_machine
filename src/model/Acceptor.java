@@ -1,6 +1,6 @@
 package model;
 
-public class Acceptor {
+public abstract class Acceptor implements Payable {
     private int amount;
 
     public Acceptor(int amount) {

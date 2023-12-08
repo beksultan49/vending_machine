@@ -6,6 +6,10 @@ import util.UniversalArrayImpl;
 import java.util.Scanner;
 
 public class AppRunner {
+    Scanner sc = new Scanner(System.in);
+    String m;
+    int number;
+    int password;
 
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
@@ -23,34 +27,70 @@ public class AppRunner {
                 new Mars(ActionLetter.F, 80),
                 new Pistachios(ActionLetter.G, 130)
         });
-        coinAcceptor = new Acceptor(100);
-        cardAcceptor = new Acceptor(100);
+        coinAcceptor = new Acceptor(100) {
+            @Override
+            public void payBy() {
+                print("Монет на сумму: " + coinAcceptor.getAmount());
+            }
+        };
+        cardAcceptor = new Acceptor(100) {
+            @Override
+            public void payBy() {
+                print("На балансе карты: " + cardAcceptor.getAmount());
+            }
+        };
+
     }
 
     public static void run() {
         AppRunner app = new AppRunner();
+        app.qwerty();
         while (!isExit) {
             app.startSimulation();
         }
+    }
+    private void qwerty(){
+        print("Выберите способ оплаты:");
+        System.out.println("x - опралить наличными\n" + "y - оплатить картой" );
+        m = sc.nextLine();
     }
 
     private void startSimulation() {
         print("В автомате доступны:");
         showProducts(products);
-        print("Монет на сумму: " + coinAcceptor.getAmount());
+        if (m.equals("x")) {
+            coinAcceptor.payBy();
+        } else if (m.equals("y")) {
+
+            System.out.println("Введите номер карты:");
+            number = sc.nextInt();
+            System.out.println("Введите пароль:");
+            password = sc.nextInt();
+            cardAcceptor.payBy();
+        }
+        else System.out.println("Не правильный ввод данных!");
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
-
     }
 
     private UniversalArray<Product> getAllowedProducts() {
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
-        for (int i = 0; i < products.size(); i++) {
-            if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
-                allowProducts.add(products.get(i));
+        if (m.equals("x")){
+            for (int i = 0; i < products.size(); i++) {
+                if (coinAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
             }
+        } else if (m.equals("y")) {
+            for (int i = 0; i < products.size(); i++) {
+                if (cardAcceptor.getAmount() >= products.get(i).getPrice()) {
+                    allowProducts.add(products.get(i));
+                }
+            }
+
         }
+
         return allowProducts;
     }
 
@@ -60,8 +100,12 @@ public class AppRunner {
         String action = fromConsole().substring(0, 1);
         try {
             for (int i = 0; i < products.size(); i++) {
-                if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase()))) {
+                if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase())) && m.equals("x")) {
                     coinAcceptor.setAmount(coinAcceptor.getAmount() - products.get(i).getPrice());
+                    print("Вы купили " + products.get(i).getName());
+                    break;
+                } else if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase())) && m.equals("y")) {
+                    cardAcceptor.setAmount(cardAcceptor.getAmount() - products.get(i).getPrice());
                     print("Вы купили " + products.get(i).getName());
                     break;
                 } else if ("h".equalsIgnoreCase(action)) {
@@ -73,8 +117,6 @@ public class AppRunner {
             print("Недопустимая буква. Попрбуйте еще раз.");
             chooseAction(products);
         }
-
-
     }
 
     private void showActions(UniversalArray<Product> products) {
