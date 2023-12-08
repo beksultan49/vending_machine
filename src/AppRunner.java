@@ -3,6 +3,7 @@ import model.*;
 import util.UniversalArray;
 import util.UniversalArrayImpl;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class AppRunner {
@@ -10,6 +11,8 @@ public class AppRunner {
     String m;
     int number;
     int password;
+    final int n = 12345678; // номер карты
+    final int p = 1234; // пароль
 
     private final UniversalArray<Product> products = new UniversalArrayImpl<>();
 
@@ -31,12 +34,20 @@ public class AppRunner {
             @Override
             public void payBy() {
                 print("Монет на сумму: " + coinAcceptor.getAmount());
+                if (coinAcceptor.getAmount() <= 0) {
+                    System.out.println("У вас закончились монеты!");
+                    System.exit(0);
+                }
             }
         };
         cardAcceptor = new Acceptor(100) {
             @Override
             public void payBy() {
                 print("На балансе карты: " + cardAcceptor.getAmount());
+                if (cardAcceptor.getAmount() <= 0) {
+                    System.out.println("У вас закончились деньги на балансе карты!");
+                    System.exit(0);
+                }
             }
         };
 
@@ -44,15 +55,22 @@ public class AppRunner {
 
     public static void run() {
         AppRunner app = new AppRunner();
-        app.qwerty();
+        app.cashCard();
         while (!isExit) {
             app.startSimulation();
         }
     }
-    private void qwerty(){
+    private void cashCard(){
         print("Выберите способ оплаты:");
-        System.out.println("x - опралить наличными\n" + "y - оплатить картой" );
+        System.out.println("x - опралить монетами\n" + "y - оплатить картой" );
         m = sc.nextLine();
+        if(m.equals("x") || m.equals("y")){
+            System.out.println("Здравствуйте!");
+        }
+        else {
+            System.out.println("Неверный ввод данных!");
+            cashCard();
+        }
     }
 
     private void startSimulation() {
@@ -61,14 +79,23 @@ public class AppRunner {
         if (m.equals("x")) {
             coinAcceptor.payBy();
         } else if (m.equals("y")) {
-
-            System.out.println("Введите номер карты:");
-            number = sc.nextInt();
-            System.out.println("Введите пароль:");
-            password = sc.nextInt();
-            cardAcceptor.payBy();
+            try {
+                System.out.println("Введите номер карты:");
+                number = sc.nextInt();
+                System.out.println("Введите пароль:");
+                password = sc.nextInt();
+                if (n == number && p == password) {
+                    cardAcceptor.payBy();
+                }
+                else {
+                    System.out.println("Hе верный номер карты или пароль...\n" + "Попробуйте заново!");
+                    System.exit(0);
+                }
+            }catch (InputMismatchException e) {
+                System.out.println("Не правильный ввод данных!\n" + "Попробуйте заново!");
+                System.exit(0);
+            }
         }
-        else System.out.println("Не правильный ввод данных!");
         UniversalArray<Product> allowProducts = new UniversalArrayImpl<>();
         allowProducts.addAll(getAllowedProducts().toArray());
         chooseAction(allowProducts);
@@ -95,9 +122,17 @@ public class AppRunner {
     }
 
     private void chooseAction(UniversalArray<Product> products) {
+        if(m.equals("x")){
+            print(" a - Пополнить баланс");
+        }
         showActions(products);
         print(" h - Выйти");
         String action = fromConsole().substring(0, 1);
+        if ("a".equalsIgnoreCase(action) && m.equals("x")) {
+            coinAcceptor.setAmount(coinAcceptor.getAmount() + 10);
+            print("Вы пополнили баланс на 10");
+            return;
+        }
         try {
             for (int i = 0; i < products.size(); i++) {
                 if (products.get(i).getActionLetter().equals(ActionLetter.valueOf(action.toUpperCase())) && m.equals("x")) {
